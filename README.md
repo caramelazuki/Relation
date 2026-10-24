@@ -1,21 +1,30 @@
 # Relation
 
-This repository includes source codes to generate neural networks with "Attention", "Linear Attention" or "Relation", which were benchmarked on two different problems (evaluation performance on a NLP benchmark dataset and computation time on a dataset including longer sequences). The benchmark results were on "[Relation is an option for processing context information](https://www.biorxiv.org/content/10.1101/2022.04.14.488336v1)."
+A PyTorch layer that shares global context across a sequence without constructing an attention matrix.
 
-For both problems (GLUE and (IMDb and Reuters Newswire Classification)), same architectures were used. The first layer is an input layer; the second layer is a layer of "Attention", "Linear Attention" or "Relation"; the third layer is an output layer.
+## Usage
 
-1. Input layer
-2. "Attention", "Linear Attention" or "Relation" layer
-3. Output layer
+```python
+import torch
+from relation import Relation
 
-There are two Python codes in the repository. The first one is for GLUE benchmark to evaluate the ability to process sequence data. The second one is for IMDb or Reuters Newswire Classification dataset to evaluate computation time of each method.
+inputs = torch.randn(32, 512, 64)
+mask = torch.ones(32, 512, dtype=torch.bool)
 
-## glue.py
-Generating model with "Attention", "Linear Attention" or "Relation" or without any of them to process data in GLUE benchmark dataset. GLUE dataset is not provided in the repository.
-The directory "result" includes the benchmark results of each method on GLUE.
+relation = Relation(in_features=64)
+outputs = relation(inputs, mask)
+```
 
-## imdbReuters.py
-Calculates computation time of model with "Attention", "Linear Attention" or "Relation" or without any of them for IMDb or Reuters Newswire Classification dataset, provided by TensorFlow.
+Relation is a standard `torch.nn.Module` designed to replace a self-Attention layer: it maps one token sequence to a contextualized sequence of the same length without computing an attention matrix.
 
-## wikitext.py and wikitext.sample.txt
-Calculates computation time of model with "Attention", "Linear Attention" or "Relation" or without any of them for WikiText-103 dataset. WikiText-103 includes pairs of a header and sentences in an instance. The task in the study is the binary classification, where each method classify whether the input sentence belongs to the secondary level of headers (= = [string] = =) or the other level of headers; the secondary level of headers is positive flag (1) and the other level of headers is negative flag (0). The number of positive and negative instances is 140365 and 163727, respectively. The file "wikitext.sample.txt" includes sample instances.
+`inputs` and `outputs` have shape `(batch, sequence, features)`. The mask is optional; `True` marks a valid token. Set `out_features` when the output feature size should differ from the input feature size.
+
+## Installation
+
+```bash
+python -m pip install "git+https://github.com/caramelazuki/Relation.git"
+```
+
+## Reference
+
+Yamada KD, Baladram MS, Lin F, [Relation is an Option for Processing Context Information](https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2022.924688/), Frontiers in Artificial Intelligence, 2022

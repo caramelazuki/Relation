@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "relation-context"
+version = "0.1.0"
+description = "A PyTorch implementation of the Relation context operator"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  {name = "Kazunori D. Yamada"},
+]
+keywords = ["deep-learning", "pytorch", "sequence-modeling"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "torch>=2.0",
+]
+
+[project.urls]
+Repository = "https://github.com/caramelazuki/Relation"
+Paper = "https://doi.org/10.3389/frai.2022.924688"
+
+[tool.setuptools]
+py-modules = ["relation"]
