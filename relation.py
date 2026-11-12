@@ -95,7 +95,9 @@ class Relation(nn.Module):
 
         valid = mask.to(device=h.device, dtype=torch.bool).unsqueeze(-1)
         masked_h = torch.where(valid, h, torch.zeros((), dtype=h.dtype, device=h.device))
-        accumulation_dtype = torch.float32 if h.dtype == torch.float16 else h.dtype
+        accumulation_dtype = (
+            torch.float32 if h.dtype in (torch.float16, torch.bfloat16) else h.dtype
+        )
         numerator = masked_h.sum(dim=-2, keepdim=True, dtype=accumulation_dtype)
         denominator = valid.sum(dim=-2, keepdim=True).to(dtype=accumulation_dtype)
         return (numerator / denominator.clamp_min(1)).to(dtype=h.dtype)
