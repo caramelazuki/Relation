@@ -32,7 +32,8 @@ class Relation(nn.Module):
 
     The optional ``mask`` passed to :meth:`forward` must have shape ``(..., N)``.
     ``True`` marks a valid token. Masked tokens are excluded from the context
-    mean. An entirely masked sequence produces a finite zero output.
+    mean. An entirely masked sequence produces a finite zero output regardless
+    of the output activation.
     """
 
     __constants__ = ["in_features", "out_features"]
@@ -123,7 +124,14 @@ class Relation(nn.Module):
         g = self.g_projection(x)
         h = self.h_projection(x)
         context = self._sequence_mean(h, mask)
-        return self.activation(self.relation_projection(g * context))
+        output = self.activation(self.relation_projection(g * context))
+        if mask is not None:
+            # Apply after activation, since sigmoid(0) and softplus(0) are nonzero.
+            has_valid = mask.to(device=output.device, dtype=torch.bool).any(
+                dim=-1, keepdim=True
+            )
+            output = output.masked_fill(~has_valid.unsqueeze(-1), 0)
+        return output
 
     def extra_repr(self) -> str:
         bias = self.g_projection.bias is not None
